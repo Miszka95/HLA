@@ -18,6 +18,13 @@ public class ClientFederate extends Federate {
     @Override
     protected void publishAndSubscribe() {
         publishInteraction(Interaction.ARRIVE);
+        publishInteraction(Interaction.LEAVE_QUEUE);
+        publishInteraction(Interaction.ENTER);
+        publishInteraction(Interaction.ORDER_FOOD);
+        publishInteraction(Interaction.PAY_AND_LEAVE);
+        subscribeInteraction(Interaction.JOIN_QUEUE);
+        subscribeInteraction(Interaction.ALLOW_TO_ENTER);
+        subscribeInteraction(Interaction.SERVE_ORDER);
     }
 
     @Override

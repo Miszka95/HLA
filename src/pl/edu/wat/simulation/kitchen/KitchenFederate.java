@@ -2,6 +2,7 @@ package pl.edu.wat.simulation.kitchen;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
+import pl.edu.wat.simulation.Interaction;
 
 public class KitchenFederate extends Federate {
 
@@ -16,7 +17,8 @@ public class KitchenFederate extends Federate {
 
     @Override
     protected void publishAndSubscribe() {
-
+        publishInteraction(Interaction.COMPLETE_ORDER);
+        subscribeInteraction(Interaction.ORDER_FOOD);
     }
 
     @Override

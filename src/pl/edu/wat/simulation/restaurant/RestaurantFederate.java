@@ -17,7 +17,10 @@ public class RestaurantFederate extends Federate {
 
     @Override
     protected void publishAndSubscribe() {
+        publishInteraction(Interaction.JOIN_QUEUE);
+        publishInteraction(Interaction.ALLOW_TO_ENTER);
         subscribeInteraction(Interaction.ARRIVE);
+        subscribeInteraction(Interaction.PAY_AND_LEAVE);
     }
 
     @Override

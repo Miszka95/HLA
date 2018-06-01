@@ -2,6 +2,7 @@ package pl.edu.wat.simulation.statistics;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
+import pl.edu.wat.simulation.Interaction;
 
 public class StatisticsFederate extends Federate {
 
@@ -16,7 +17,9 @@ public class StatisticsFederate extends Federate {
 
     @Override
     protected void publishAndSubscribe() {
-
+        subscribeInteraction(Interaction.JOIN_QUEUE);
+        subscribeInteraction(Interaction.LEAVE_QUEUE);
+        subscribeInteraction(Interaction.ENTER);
     }
 
     @Override

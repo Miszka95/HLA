@@ -13,8 +13,8 @@ import java.net.MalformedURLException;
 
 public class Federation {
 
-    public static final String SYNCHRONIZATION_POINT = "Restaurant Opening";
 
+    public static final String SYNCHRONIZATION_POINT = "Restaurant Opening";
     private static final String FED_FILE = "restaurant.fed";
     private static final String FEDERATION_NAME = "RestaurantFederation";
 
