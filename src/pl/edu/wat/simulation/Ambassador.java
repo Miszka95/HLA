@@ -1,10 +1,14 @@
 package pl.edu.wat.simulation;
 
+import java.util.List;
+
 import hla.rti.*;
 import hla.rti.jlc.NullFederateAmbassador;
 import org.portico.impl.hla13.types.DoubleTime;
 
 public abstract class Ambassador extends NullFederateAmbassador {
+
+    protected List<InteractionInstance> receivedInteractions;
 
     protected double federateTime = 0.0;
     protected double federateLookahead = 1.0;
@@ -67,6 +71,15 @@ public abstract class Ambassador extends NullFederateAmbassador {
         super.timeAdvanceGrant(theTime);
         setFederateTime(convertTime(theTime));
         setAdvancing(false);
+    }
+
+    @Override
+    public void receiveInteraction(int interactionClass, ReceivedInteraction theInteraction, byte[] userSuppliedTag,
+            LogicalTime theTime, EventRetractionHandle eventRetractionHandle)
+            throws InteractionClassNotKnown, InteractionParameterNotKnown, InvalidFederationTime,
+            FederateInternalError {
+        super.receiveInteraction(interactionClass, theInteraction, userSuppliedTag, theTime, eventRetractionHandle);
+        receivedInteractions.add(new InteractionInstance(convertTime(theTime), theInteraction));
     }
 
     protected double convertTime(LogicalTime logicalTime) {

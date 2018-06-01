@@ -2,6 +2,7 @@ package pl.edu.wat.simulation.restaurant;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
+import pl.edu.wat.simulation.Interaction;
 
 public class RestaurantFederate extends Federate {
 
@@ -16,7 +17,7 @@ public class RestaurantFederate extends Federate {
 
     @Override
     protected void publishAndSubscribe() {
-
+        subscribeInteraction(Interaction.ARRIVE);
     }
 
     @Override

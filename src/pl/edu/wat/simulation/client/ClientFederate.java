@@ -2,6 +2,7 @@ package pl.edu.wat.simulation.client;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
+import pl.edu.wat.simulation.Interaction;
 
 public class ClientFederate extends Federate {
 
@@ -16,7 +17,7 @@ public class ClientFederate extends Federate {
 
     @Override
     protected void publishAndSubscribe() {
-
+        publishInteraction(Interaction.ARRIVE);
     }
 
     @Override

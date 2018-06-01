@@ -101,6 +101,28 @@ public class Federation {
         }
     }
 
+    public static int publishInteraction(Interaction interaction) {
+        int handle = 0;
+        try {
+            handle = rti.getInteractionClassHandle(interaction.getLabel());
+            rti.publishInteractionClass(handle);
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+        return handle;
+    }
+
+    public static int subscribeInteraction(Interaction interaction) {
+        int handle = 0;
+        try {
+            handle = rti.getInteractionClassHandle(interaction.getLabel());
+            rti.subscribeInteractionClass(handle);
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+        return handle;
+    }
+
     private static void waitForUser() {
         System.out.println("Press ENTER to start simulation");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
