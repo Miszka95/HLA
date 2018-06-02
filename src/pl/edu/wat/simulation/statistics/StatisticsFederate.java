@@ -2,7 +2,10 @@ package pl.edu.wat.simulation.statistics;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
-import pl.edu.wat.simulation.InteractionType;
+
+import java.util.Arrays;
+
+import static pl.edu.wat.simulation.InteractionType.*;
 
 public class StatisticsFederate extends Federate {
 
@@ -13,14 +16,8 @@ public class StatisticsFederate extends Federate {
         ambassador = new StatisticsAmbassador();
         ambassador.setFederate(this);
         timeStep = 20.0;
+        SUBSCRIBED_INTERACTIONS = Arrays.asList(JOIN_QUEUE, LEAVE_QUEUE, ENTER);
         Federation.join(NAME, ambassador);
-    }
-
-    @Override
-    protected void publishAndSubscribe() {
-        subscribeInteraction(InteractionType.JOIN_QUEUE);
-        subscribeInteraction(InteractionType.LEAVE_QUEUE);
-        subscribeInteraction(InteractionType.ENTER);
     }
 
     @Override

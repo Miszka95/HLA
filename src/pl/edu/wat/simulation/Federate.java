@@ -4,17 +4,18 @@ import hla.rti.RTIambassador;
 import hla.rti.SuppliedParameters;
 import hla.rti.jlc.EncodingHelpers;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class Federate {
 
     protected RTIambassador rti = Federation.getRti();
+
     protected Ambassador ambassador;
     protected Map<InteractionType, Integer> interactionHandles = new HashMap<>();
     protected double timeStep;
+
+    protected static List<InteractionType> PUBLISHED_INTERACTIONS = Collections.emptyList();
+    protected static List<InteractionType> SUBSCRIBED_INTERACTIONS = Collections.emptyList();
 
     protected final void runFederate() {
         init();
@@ -26,17 +27,20 @@ public abstract class Federate {
 
     protected abstract void init();
 
-    protected void synchronize() {
+    private void synchronize() {
         Objects.requireNonNull(ambassador);
         Federation.synchronize(ambassador);
     }
 
-    protected void enableTimePolicy() {
+    private void enableTimePolicy() {
         Objects.requireNonNull(ambassador);
         Federation.enableTimePolicy(ambassador);
     }
 
-    protected abstract void publishAndSubscribe();
+    private void publishAndSubscribe() {
+        PUBLISHED_INTERACTIONS.forEach(this::publishInteraction);
+        SUBSCRIBED_INTERACTIONS.forEach(this::subscribeInteraction);
+    }
 
     protected abstract void run();
 

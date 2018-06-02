@@ -2,7 +2,10 @@ package pl.edu.wat.simulation.restaurant;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
-import pl.edu.wat.simulation.InteractionType;
+
+import java.util.Arrays;
+
+import static pl.edu.wat.simulation.InteractionType.*;
 
 public class RestaurantFederate extends Federate {
 
@@ -13,15 +16,9 @@ public class RestaurantFederate extends Federate {
         ambassador = new RestaurantAmbassador();
         ambassador.setFederate(this);
         timeStep = 5.0;
+        PUBLISHED_INTERACTIONS = Arrays.asList(JOIN_QUEUE, ALLOW_TO_ENTER);
+        SUBSCRIBED_INTERACTIONS = Arrays.asList(ARRIVE, PAY_AND_LEAVE);
         Federation.join(NAME, ambassador);
-    }
-
-    @Override
-    protected void publishAndSubscribe() {
-        publishInteraction(InteractionType.JOIN_QUEUE);
-        publishInteraction(InteractionType.ALLOW_TO_ENTER);
-        subscribeInteraction(InteractionType.ARRIVE);
-        subscribeInteraction(InteractionType.PAY_AND_LEAVE);
     }
 
     @Override
