@@ -16,7 +16,7 @@ public class Federation {
 
     public static final String SYNCHRONIZATION_POINT = "Restaurant Opening";
     private static final String FED_FILE = "restaurant.fed";
-    private static final String FEDERATION_NAME = "RestaurantFederation";
+    private static final String FEDERATION_NAME = "Restaurant";
 
     private static RTIambassador rti;
 
@@ -27,7 +27,6 @@ public class Federation {
             rti.createFederationExecution(FEDERATION_NAME, fom.toURI().toURL());
         } catch (RTIexception | MalformedURLException exception) {
             System.out.println("Federation already exists. Joining federation " + FEDERATION_NAME);
-//            exception.printStackTrace();
         }
     }
 
@@ -44,7 +43,7 @@ public class Federation {
     }
 
     public static void advanceTime(double timeStep, Ambassador ambassador) {
-        ambassador.isAdvancing = true;
+        ambassador.setAdvancing(true);
         LogicalTime newTime = convertTime(ambassador.getFederateTime() + timeStep);
         try {
             rti.timeAdvanceRequest(newTime);
@@ -101,10 +100,10 @@ public class Federation {
         }
     }
 
-    public static int publishInteraction(Interaction interaction) {
+    public static int publishInteraction(InteractionType interactionType) {
         int handle = 0;
         try {
-            handle = rti.getInteractionClassHandle(interaction.getLabel());
+            handle = getInteractionClassHandle(interactionType);
             rti.publishInteractionClass(handle);
         } catch (RTIexception exception) {
             exception.printStackTrace();
@@ -112,15 +111,51 @@ public class Federation {
         return handle;
     }
 
-    public static int subscribeInteraction(Interaction interaction) {
+    public static int subscribeInteraction(InteractionType interactionType) {
         int handle = 0;
         try {
-            handle = rti.getInteractionClassHandle(interaction.getLabel());
+            handle = getInteractionClassHandle(interactionType);
             rti.subscribeInteractionClass(handle);
         } catch (RTIexception exception) {
             exception.printStackTrace();
         }
         return handle;
+    }
+
+    public static int getInteractionClassHandle(InteractionType interactionType) {
+        try {
+            return rti.getInteractionClassHandle(interactionType.getLabel());
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static SuppliedParameters getSuppliedParameters() {
+        try {
+            return RtiFactoryFactory.getRtiFactory().createSuppliedParameters();
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    public static int getParameterHandle(String parameterName, int interactionHandle) {
+        try {
+            return rti.getParameterHandle(parameterName, interactionHandle);
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static void sendInteraction(int interactionHandle, SuppliedParameters parameters, Ambassador ambassador) {
+        try {
+            rti.sendInteraction(interactionHandle, parameters, "tag".getBytes(),
+                    convertTime(ambassador.getFederateTime() + ambassador.getFederateLookahead()));
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
     }
 
     private static void waitForUser() {
@@ -132,7 +167,7 @@ public class Federation {
         }
     }
 
-    private static LogicalTime convertTime(double time) {
+    public static LogicalTime convertTime(double time) {
         return new DoubleTime(time);
     }
 

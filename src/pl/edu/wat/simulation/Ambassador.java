@@ -1,25 +1,29 @@
 package pl.edu.wat.simulation;
 
-import java.util.List;
-
 import hla.rti.*;
 import hla.rti.jlc.NullFederateAmbassador;
 import org.portico.impl.hla13.types.DoubleTime;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public abstract class Ambassador extends NullFederateAmbassador {
 
-    protected List<InteractionInstance> receivedInteractions;
+    protected List<Interaction> receivedInteractions = new ArrayList<>();
+
+    protected Federate federate;
 
     protected double federateTime = 0.0;
-    protected double federateLookahead = 1.0;
 
+    protected double federateLookahead = 1.0;
     protected boolean isRegulating = false;
+
     protected boolean isConstrained = false;
     protected boolean isAdvancing = false;
-
     protected boolean isAnnounced = false;
-    protected boolean isReadyToRun = false;
 
+    protected boolean isReadyToRun = false;
     protected boolean running = true;
 
     @Override
@@ -75,15 +79,34 @@ public abstract class Ambassador extends NullFederateAmbassador {
 
     @Override
     public void receiveInteraction(int interactionClass, ReceivedInteraction theInteraction, byte[] userSuppliedTag,
-            LogicalTime theTime, EventRetractionHandle eventRetractionHandle)
+                                   LogicalTime theTime, EventRetractionHandle eventRetractionHandle)
             throws InteractionClassNotKnown, InteractionParameterNotKnown, InvalidFederationTime,
             FederateInternalError {
         super.receiveInteraction(interactionClass, theInteraction, userSuppliedTag, theTime, eventRetractionHandle);
-        receivedInteractions.add(new InteractionInstance(convertTime(theTime), theInteraction));
+
+        for (Map.Entry<InteractionType, Integer> entry : federate.getInteractionHandles().entrySet()) {
+            if (interactionClass == entry.getValue()) {
+                Interaction interaction = new Interaction(convertTime(theTime), entry.getKey());
+                interaction.assignParameters(theInteraction);
+                receivedInteractions.add(interaction);
+            }
+        }
     }
 
     protected double convertTime(LogicalTime logicalTime) {
         return ((DoubleTime) logicalTime).getTime();
+    }
+
+    public List<Interaction> getReceivedInteractions() {
+        return receivedInteractions;
+    }
+
+    public Federate getFederate() {
+        return federate;
+    }
+
+    public void setFederate(Federate federate) {
+        this.federate = federate;
     }
 
     public double getFederateTime() {

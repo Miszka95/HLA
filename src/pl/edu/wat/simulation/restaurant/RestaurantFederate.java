@@ -2,7 +2,7 @@ package pl.edu.wat.simulation.restaurant;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
-import pl.edu.wat.simulation.Interaction;
+import pl.edu.wat.simulation.InteractionType;
 
 public class RestaurantFederate extends Federate {
 
@@ -11,16 +11,17 @@ public class RestaurantFederate extends Federate {
     @Override
     protected void init() {
         ambassador = new RestaurantAmbassador();
+        ambassador.setFederate(this);
         timeStep = 5.0;
         Federation.join(NAME, ambassador);
     }
 
     @Override
     protected void publishAndSubscribe() {
-        publishInteraction(Interaction.JOIN_QUEUE);
-        publishInteraction(Interaction.ALLOW_TO_ENTER);
-        subscribeInteraction(Interaction.ARRIVE);
-        subscribeInteraction(Interaction.PAY_AND_LEAVE);
+        publishInteraction(InteractionType.JOIN_QUEUE);
+        publishInteraction(InteractionType.ALLOW_TO_ENTER);
+        subscribeInteraction(InteractionType.ARRIVE);
+        subscribeInteraction(InteractionType.PAY_AND_LEAVE);
     }
 
     @Override
@@ -28,6 +29,7 @@ public class RestaurantFederate extends Federate {
         while (ambassador.isRunning()) {
             Federation.advanceTime(timeStep, ambassador);
             System.out.println(NAME + ": " + ambassador.getFederateTime());
+            ambassador.getReceivedInteractions().forEach(System.out::println);
             Federation.tick();
         }
     }

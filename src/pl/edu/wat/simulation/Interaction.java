@@ -1,23 +1,44 @@
 package pl.edu.wat.simulation;
 
-public enum Interaction {
-    ARRIVE("InteractionRoot.Arrive"),
-    JOIN_QUEUE("InteractionRoot.JoinQueue"),
-    ALLOW_TO_ENTER("InteractionRoot.AllowToEnter"),
-    LEAVE_QUEUE("InteractionRoot.LeaveQueue"),
-    ENTER("InteractionRoot.Enter"),
-    ORDER_FOOD("InteractionRoot.OrderFood"),
-    COMPLETE_ORDER("InteractionRoot.CompleteOrder"),
-    SERVE_ORDER("InteractionRoot.ServeOrder"),
-    PAY_AND_LEAVE("InteractionRoot.PayAndLeave");
+import hla.rti.ArrayIndexOutOfBounds;
+import hla.rti.ReceivedInteraction;
+import hla.rti.jlc.EncodingHelpers;
 
-    private String label;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    Interaction(String label) {
-        this.label = label;
+public class Interaction {
+
+    private double time;
+
+    private InteractionType interactionType;
+
+    private Map<String, Integer> parameters = new HashMap<>();
+
+    public Interaction(double time, InteractionType interactionType) {
+        this.time = time;
+        this.interactionType = interactionType;
     }
 
-    public String getLabel() {
-        return label;
+    public void assignParameters(ReceivedInteraction receivedInteraction) {
+        List<String> parameterNames = interactionType.getParameters();
+
+        for (int i = 0; i < parameterNames.size(); i++) {
+            try {
+                this.parameters.put(parameterNames.get(i), EncodingHelpers.decodeInt(receivedInteraction.getValue(i)));
+            } catch (ArrayIndexOutOfBounds arrayIndexOutOfBounds) {
+                arrayIndexOutOfBounds.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Interaction{" +
+                "time=" + time +
+                ", interactionType=" + interactionType.getLabel() +
+                ", parameters=" + parameters +
+                '}';
     }
 }

@@ -2,7 +2,7 @@ package pl.edu.wat.simulation.kitchen;
 
 import pl.edu.wat.simulation.Federate;
 import pl.edu.wat.simulation.Federation;
-import pl.edu.wat.simulation.Interaction;
+import pl.edu.wat.simulation.InteractionType;
 
 public class KitchenFederate extends Federate {
 
@@ -11,14 +11,15 @@ public class KitchenFederate extends Federate {
     @Override
     protected void init() {
         ambassador = new KitchenAmbassador();
+        ambassador.setFederate(this);
         timeStep = 15.0;
         Federation.join(NAME, ambassador);
     }
 
     @Override
     protected void publishAndSubscribe() {
-        publishInteraction(Interaction.COMPLETE_ORDER);
-        subscribeInteraction(Interaction.ORDER_FOOD);
+        publishInteraction(InteractionType.COMPLETE_ORDER);
+        subscribeInteraction(InteractionType.ORDER_FOOD);
     }
 
     @Override
