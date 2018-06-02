@@ -41,4 +41,16 @@ public class Interaction {
                 ", parameters=" + parameters +
                 '}';
     }
+
+    public double getTime() {
+        return time;
+    }
+
+    public InteractionType getInteractionType() {
+        return interactionType;
+    }
+
+    public Map<String, Integer> getParameters() {
+        return parameters;
+    }
 }

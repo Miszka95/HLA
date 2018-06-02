@@ -9,13 +9,14 @@ import static pl.edu.wat.simulation.InteractionType.*;
 
 public class StatisticsFederate extends Federate {
 
+    public static final Double TIME_STEP = 20.0;
+
     private static final String NAME = "StatisticsFederate";
 
     @Override
     protected void init() {
         ambassador = new StatisticsAmbassador();
         ambassador.setFederate(this);
-        timeStep = 20.0;
         SUBSCRIBED_INTERACTIONS = Arrays.asList(JOIN_QUEUE, LEAVE_QUEUE, ENTER);
         Federation.join(NAME, ambassador);
     }
@@ -23,7 +24,7 @@ public class StatisticsFederate extends Federate {
     @Override
     protected void run() {
         while (ambassador.isRunning()) {
-            Federation.advanceTime(timeStep, ambassador);
+            Federation.advanceTime(TIME_STEP, ambassador);
             System.out.println(NAME + ": " + ambassador.getFederateTime());
             Federation.tick();
         }

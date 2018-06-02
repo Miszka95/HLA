@@ -1,6 +1,5 @@
 package pl.edu.wat.simulation;
 
-import hla.rti.RTIambassador;
 import hla.rti.SuppliedParameters;
 import hla.rti.jlc.EncodingHelpers;
 
@@ -8,14 +7,12 @@ import java.util.*;
 
 public abstract class Federate {
 
-    protected RTIambassador rti = Federation.getRti();
-
     protected Ambassador ambassador;
-    protected Map<InteractionType, Integer> interactionHandles = new HashMap<>();
-    protected double timeStep;
 
     protected static List<InteractionType> PUBLISHED_INTERACTIONS = Collections.emptyList();
     protected static List<InteractionType> SUBSCRIBED_INTERACTIONS = Collections.emptyList();
+
+    private Map<InteractionType, Integer> interactionHandles = new HashMap<>();
 
     protected final void runFederate() {
         init();
@@ -70,9 +67,5 @@ public abstract class Federate {
 
     public Map<InteractionType, Integer> getInteractionHandles() {
         return interactionHandles;
-    }
-
-    public void setInteractionHandles(Map<InteractionType, Integer> interactionHandles) {
-        this.interactionHandles = interactionHandles;
     }
 }

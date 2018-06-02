@@ -30,10 +30,6 @@ public class Federation {
         }
     }
 
-    public static RTIambassador getRti() {
-        return rti;
-    }
-
     public static void tick() {
         try {
             rti.tick();
