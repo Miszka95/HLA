@@ -33,6 +33,10 @@ public class Interaction {
         }
     }
 
+    public int getParameter(String parameter) {
+        return parameters.get(parameter);
+    }
+
     @Override
     public String toString() {
         return "Interaction{" +
@@ -48,9 +52,5 @@ public class Interaction {
 
     public InteractionType getInteractionType() {
         return interactionType;
-    }
-
-    public Map<String, Integer> getParameters() {
-        return parameters;
     }
 }

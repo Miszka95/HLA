@@ -1,9 +1,6 @@
 package pl.edu.wat.simulation.client;
 
-import pl.edu.wat.simulation.Interaction;
-import pl.edu.wat.simulation.InteractionType;
-import pl.edu.wat.simulation.Logger;
-import pl.edu.wat.simulation.Randomizer;
+import pl.edu.wat.simulation.*;
 
 import java.util.Optional;
 

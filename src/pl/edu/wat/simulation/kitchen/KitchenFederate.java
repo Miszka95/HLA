@@ -1,17 +1,16 @@
 package pl.edu.wat.simulation.kitchen;
 
-import pl.edu.wat.simulation.*;
+import pl.edu.wat.simulation.Federate;
+import pl.edu.wat.simulation.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static pl.edu.wat.simulation.InteractionType.COMPLETE_ORDER;
 import static pl.edu.wat.simulation.InteractionType.ORDER_FOOD;
 
 public class KitchenFederate extends Federate {
-
-    public static final Double TIME_STEP = 15.0;
-
-    private static final String NAME = "KitchenFederate";
 
     private List<Order> orders = new ArrayList<>();
 
@@ -19,24 +18,18 @@ public class KitchenFederate extends Federate {
     protected void init() {
         ambassador = new KitchenAmbassador();
         ambassador.setFederate(this);
+        NAME = "KitchenFederate";
+        TIME_STEP = 15.0;
         PUBLISHED_INTERACTIONS = Collections.singletonList(COMPLETE_ORDER);
         SUBSCRIBED_INTERACTIONS = Collections.singletonList(ORDER_FOOD);
-        Federation.join(NAME, ambassador);
     }
 
     @Override
     protected void run() {
-        while (ambassador.isRunning()) {
-            Federation.advanceTime(TIME_STEP, ambassador);
-            System.out.println(NAME + ": " + ambassador.getFederateTime());
-
-            orders.forEach(Order::cook);
-            orders.removeIf(this::readyToServe);
-            ambassador.getReceivedInteractions().forEach(i -> createRandomOrder(i.getParameters().get("id")));
-            ambassador.getReceivedInteractions().clear();
-
-            Federation.tick();
-        }
+        orders.forEach(Order::cook);
+        orders.removeIf(this::readyToServe);
+        ambassador.getReceivedInteractions().forEach(i -> createRandomOrder(i.getParameter("id")));
+        ambassador.getReceivedInteractions().clear();
     }
 
     private void createRandomOrder(int clientId) {

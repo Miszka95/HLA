@@ -7,19 +7,29 @@ import java.util.*;
 
 public abstract class Federate {
 
-    protected Ambassador ambassador;
+    public static Double TIME_STEP;
+
+    protected static String NAME;
 
     protected static List<InteractionType> PUBLISHED_INTERACTIONS = Collections.emptyList();
     protected static List<InteractionType> SUBSCRIBED_INTERACTIONS = Collections.emptyList();
+
+    protected Ambassador ambassador;
 
     private Map<InteractionType, Integer> interactionHandles = new HashMap<>();
 
     protected final void runFederate() {
         init();
+        Federation.join(NAME, ambassador);
         synchronize();
         enableTimePolicy();
         publishAndSubscribe();
-        run();
+        while (ambassador.isRunning()) {
+            Federation.advanceTime(TIME_STEP, ambassador);
+            Logger.log("%s: %f", NAME, ambassador.getFederateTime());
+            run();
+            Federation.tick();
+        }
     }
 
     protected abstract void init();
@@ -41,11 +51,11 @@ public abstract class Federate {
 
     protected abstract void run();
 
-    protected void publishInteraction(InteractionType interactionType) {
+    private void publishInteraction(InteractionType interactionType) {
         interactionHandles.put(interactionType, Federation.publishInteraction(interactionType));
     }
 
-    protected void subscribeInteraction(InteractionType interactionType) {
+    private void subscribeInteraction(InteractionType interactionType) {
         interactionHandles.put(interactionType, Federation.subscribeInteraction(interactionType));
     }
 
