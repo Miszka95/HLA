@@ -1,15 +1,24 @@
 package pl.edu.wat.simulation.restaurant;
 
 import pl.edu.wat.simulation.Federate;
+import pl.edu.wat.simulation.Federation;
 import pl.edu.wat.simulation.Interaction;
 import pl.edu.wat.simulation.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static pl.edu.wat.simulation.InteractionType.*;
 
 public class RestaurantFederate extends Federate {
+
+    public static final int FREE_PLACES = 15;
+
+    private static int POSITION_IN_QUEUE = 0;
+
+    private Restaurant restaurant;
+    private int restaurantHandle;
 
     @Override
     protected void init() {
@@ -18,26 +27,52 @@ public class RestaurantFederate extends Federate {
         NAME = "RestaurantFederate";
         TIME_STEP = 15.0;
         PUBLISHED_INTERACTIONS = Arrays.asList(JOIN_QUEUE, ALLOW_TO_ENTER);
-        SUBSCRIBED_INTERACTIONS = Arrays.asList(ARRIVE, PAY_AND_LEAVE);
+        SUBSCRIBED_INTERACTIONS = Arrays.asList(ARRIVE, ENTER, PAY_AND_LEAVE);
+        restaurant = Restaurant.getInstance();
+    }
+
+    @Override
+    protected void publishAndSubscribe() {
+        super.publishAndSubscribe();
+        Federation.publishRestaurantObject();
+        this.restaurantHandle = Federation.registerRestaurantObject();
+    }
+
+    private void updateRestaurantObject(Restaurant restaurant) {
+        Federation.updateRestaurantObject(restaurantHandle, restaurant, ambassador);
     }
 
     @Override
     protected void run() {
-        ambassador.getReceivedInteractions().forEach(this::handleInteraction);
-        ambassador.getReceivedInteractions().clear();
+        List<Interaction> interactions = ambassador.getReceivedInteractions();
+        Interaction.filter(interactions, PAY_AND_LEAVE).forEach(this::handleInteraction);
+        Interaction.filter(interactions, ENTER).forEach(this::handleInteraction);
+        Interaction.filter(interactions, ARRIVE).forEach(this::handleInteraction);
+        interactions.clear();
+        updateRestaurantObject(restaurant);
+        Logger.log("Free places in restaurant: %d", restaurant.getFreePlaces());
     }
 
     private void handleInteraction(Interaction interaction) {
-        if (ARRIVE.equals(interaction.getInteractionType())) {
+        if (PAY_AND_LEAVE.equals(interaction.getInteractionType())) {
+            restaurant.freePlace();
+        } else if (ENTER.equals(interaction.getInteractionType())) {
+            restaurant.takePlace();
+        } else if (ARRIVE.equals(interaction.getInteractionType())) {
             handleClientArrival(interaction);
         }
-        //TODO: wariant w którym klient czeka w kolejce
     }
 
     private void handleClientArrival(Interaction interaction) {
         Integer clientId = interaction.getParameter("id");
-        sendInteraction(ALLOW_TO_ENTER, Collections.singletonList(clientId));
-        Logger.log("Allowing client with id %d to enter", clientId);
+        if (restaurant.canEnter()) {
+            sendInteraction(ALLOW_TO_ENTER, Collections.singletonList(clientId));
+            Logger.log("Allowing client with id %d to enter", clientId);
+        } else {
+            int place = ++POSITION_IN_QUEUE;
+            sendInteraction(JOIN_QUEUE, Arrays.asList(clientId, place));
+            Logger.log("Client with id %d placed in queue with number %d", clientId, place);
+        }
     }
 
     public static void main(String[] args) {

@@ -44,7 +44,7 @@ public abstract class Federate {
         Federation.enableTimePolicy(ambassador);
     }
 
-    private void publishAndSubscribe() {
+    protected void publishAndSubscribe() {
         PUBLISHED_INTERACTIONS.forEach(this::publishInteraction);
         SUBSCRIBED_INTERACTIONS.forEach(this::subscribeInteraction);
     }
@@ -66,6 +66,7 @@ public abstract class Federate {
         if (!parameters.isEmpty() && parameters.size() == interactionType.getParameters().size()) {
             int size = parameters.size();
             List<String> parameterNames = interactionType.getParameters();
+            Collections.reverse(parameters);
             for (int i = 0; i < size; i++) {
                 suppliedParameters.add(
                         Federation.getParameterHandle(parameterNames.get(i), interactionHandle),
@@ -74,6 +75,11 @@ public abstract class Federate {
         }
         Federation.sendInteraction(interactionHandle, suppliedParameters, ambassador);
     }
+
+    protected void registerHLAObject(String name) {
+
+    }
+
 
     public Map<InteractionType, Integer> getInteractionHandles() {
         return interactionHandles;

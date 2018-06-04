@@ -1,11 +1,25 @@
 package pl.edu.wat.simulation.restaurant;
 
 public class Restaurant {
+
     private int freePlaces;
-    private int queueSize;
+
+    private static final Restaurant instance = new Restaurant();
+
+    public static Restaurant getInstance() {
+        return instance;
+    }
 
     public boolean canEnter() {
         return freePlaces > 0;
+    }
+
+    public void freePlace() {
+        freePlaces += 1;
+    }
+
+    public void takePlace() {
+        freePlaces -= 1;
     }
 
     public int getFreePlaces() {
@@ -16,11 +30,7 @@ public class Restaurant {
         this.freePlaces = freePlaces;
     }
 
-    public int getQueueSize() {
-        return queueSize;
-    }
-
-    public void setQueueSize(int queueSize) {
-        this.queueSize = queueSize;
+    private Restaurant() {
+        this.freePlaces = RestaurantFederate.FREE_PLACES;
     }
 }

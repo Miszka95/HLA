@@ -7,6 +7,7 @@ import hla.rti.jlc.EncodingHelpers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Interaction {
 
@@ -31,6 +32,12 @@ public class Interaction {
                 arrayIndexOutOfBounds.printStackTrace();
             }
         }
+    }
+
+    public static List<Interaction> filter(List<Interaction> interactions, InteractionType interactionType) {
+        return interactions.stream()
+                .filter(i -> interactionType.equals(i.getInteractionType()))
+                .collect(Collectors.toList());
     }
 
     public int getParameter(String parameter) {

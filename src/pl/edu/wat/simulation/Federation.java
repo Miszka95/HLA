@@ -1,9 +1,11 @@
 package pl.edu.wat.simulation;
 
 import hla.rti.*;
+import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.RtiFactoryFactory;
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.DoubleTimeInterval;
+import pl.edu.wat.simulation.restaurant.Restaurant;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -91,6 +93,60 @@ public class Federation {
             while (!ambassador.isConstrained()) {
                 tick();
             }
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static int registerRestaurantObject() {
+        int handle = 0;
+        try {
+            int classHandle = rti.getObjectClassHandle("ObjectRoot.Restaurant");
+            handle = rti.registerObjectInstance(classHandle);
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+        return handle;
+    }
+
+    public static void publishRestaurantObject() {
+        try {
+            int classHandle = rti.getObjectClassHandle("ObjectRoot.Restaurant");
+            int freePlacesHandle = rti.getAttributeHandle("freePlaces", classHandle);
+
+            AttributeHandleSet attributes = RtiFactoryFactory.getRtiFactory().createAttributeHandleSet();
+            attributes.add(freePlacesHandle);
+
+            rti.publishObjectClass(classHandle, attributes);
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void subscribeRestaurantObject() {
+        try {
+            int classHandle = rti.getObjectClassHandle("ObjectRoot.Restaurant");
+            int freePlacesHandle = rti.getAttributeHandle("freePlaces", classHandle);
+
+            AttributeHandleSet attributes = RtiFactoryFactory.getRtiFactory().createAttributeHandleSet();
+            attributes.add(freePlacesHandle);
+
+            rti.subscribeObjectClassAttributes(classHandle, attributes);
+        } catch (RTIexception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void updateRestaurantObject(int restaurantHandle, Restaurant restaurant, Ambassador ambassador) {
+        try {
+            SuppliedAttributes attributes = RtiFactoryFactory.getRtiFactory().createSuppliedAttributes();
+            int classHandle = rti.getObjectClass(restaurantHandle);
+            int freePlacesHandle = rti.getAttributeHandle("freePlaces", classHandle);
+
+            attributes.add(freePlacesHandle, EncodingHelpers.encodeInt(restaurant.getFreePlaces()));
+
+            rti.updateAttributeValues(restaurantHandle, attributes, "tag".getBytes(),
+                    convertTime(ambassador.getFederateTime() + ambassador.getFederateLookahead()));
         } catch (RTIexception exception) {
             exception.printStackTrace();
         }

@@ -1,9 +1,7 @@
 package pl.edu.wat.simulation.client;
 
-import pl.edu.wat.simulation.Federate;
-import pl.edu.wat.simulation.Interaction;
-import pl.edu.wat.simulation.InteractionType;
-import pl.edu.wat.simulation.Randomizer;
+import pl.edu.wat.simulation.*;
+import pl.edu.wat.simulation.restaurant.Restaurant;
 
 import java.util.*;
 
@@ -13,6 +11,10 @@ public class ClientFederate extends Federate {
 
     private List<Client> clients = new ArrayList<>();
 
+    private Restaurant restaurant;
+
+    private Map<Client, Integer> queue = new HashMap<>();
+
     @Override
     protected void init() {
         ambassador = new ClientAmbassador();
@@ -21,6 +23,13 @@ public class ClientFederate extends Federate {
         TIME_STEP = 2.0;
         PUBLISHED_INTERACTIONS = Arrays.asList(ARRIVE, LEAVE_QUEUE, ENTER, ORDER_FOOD, PAY_AND_LEAVE);
         SUBSCRIBED_INTERACTIONS = Arrays.asList(JOIN_QUEUE, ALLOW_TO_ENTER, SERVE_ORDER);
+        restaurant = Restaurant.getInstance();
+    }
+
+    @Override
+    protected void publishAndSubscribe() {
+        super.publishAndSubscribe();
+        Federation.subscribeRestaurantObject();
     }
 
     @Override
@@ -29,8 +38,8 @@ public class ClientFederate extends Federate {
             Optional<Interaction> interaction = findInteractionForClient(client);
 
             Optional<InteractionType> reaction = interaction.isPresent()
-                    ? client.reactToInteraction(interaction.get())
-                    : client.continueActivity();
+                    ? client.reactToInteraction(interaction.get(), this)
+                    : client.continueActivity(this);
 
             reaction.ifPresent(r -> handleClientReaction(client, r));
         }
@@ -44,8 +53,7 @@ public class ClientFederate extends Federate {
         } else if (ENTER.equals(reaction)) {
             sendInteraction(ENTER, Collections.singletonList(client.getId()));
             sendInteraction(ORDER_FOOD, Collections.singletonList(client.getId()));
-        }
-        else {
+        } else {
             sendInteraction(reaction, Collections.singletonList(client.getId()));
         }
     }
@@ -62,6 +70,14 @@ public class ClientFederate extends Federate {
             clients.add(client);
             sendInteraction(ARRIVE, Collections.singletonList(client.getId()));
         }
+    }
+
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public Map<Client, Integer> getQueue() {
+        return queue;
     }
 
     public static void main(String[] args) {
