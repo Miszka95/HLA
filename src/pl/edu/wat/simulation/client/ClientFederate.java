@@ -15,6 +15,8 @@ public class ClientFederate extends Federate {
 
     private Map<Client, Integer> queue = new HashMap<>();
 
+    private List<Client> clientsToRemove = new ArrayList<>();
+
     @Override
     protected void init() {
         ambassador = new ClientAmbassador();
@@ -43,13 +45,14 @@ public class ClientFederate extends Federate {
 
             reaction.ifPresent(r -> handleClientReaction(client, r));
         }
+        clients.removeAll(clientsToRemove);
         ambassador.getReceivedInteractions().clear();
         spawnClientWithProbability();
     }
 
     private void handleClientReaction(Client client, InteractionType reaction) {
         if (PAY_AND_LEAVE.equals(reaction)) {
-            sendInteraction(PAY_AND_LEAVE, Collections.emptyList());
+            sendInteraction(PAY_AND_LEAVE, Collections.singletonList(client.getId()));
         } else if (ENTER.equals(reaction)) {
             sendInteraction(ENTER, Collections.singletonList(client.getId()));
             sendInteraction(ORDER_FOOD, Collections.singletonList(client.getId()));
@@ -78,6 +81,10 @@ public class ClientFederate extends Federate {
 
     public Map<Client, Integer> getQueue() {
         return queue;
+    }
+
+    public List<Client> getClientsToRemove() {
+        return clientsToRemove;
     }
 
     public static void main(String[] args) {

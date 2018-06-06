@@ -19,7 +19,7 @@ public class KitchenFederate extends Federate {
         ambassador = new KitchenAmbassador();
         ambassador.setFederate(this);
         NAME = "KitchenFederate";
-        TIME_STEP = 15.0;
+        TIME_STEP = 10.0;
         PUBLISHED_INTERACTIONS = Collections.singletonList(COMPLETE_ORDER);
         SUBSCRIBED_INTERACTIONS = Collections.singletonList(ORDER_FOOD);
     }
@@ -35,7 +35,7 @@ public class KitchenFederate extends Federate {
     private void createRandomOrder(int clientId) {
         Order order = Order.create(clientId);
         orders.add(order);
-        Logger.log("Preparing meal for client with id %d. Estimated time: %f",
+        Logger.log("Started preparing meal for client with id %d. Estimated time: %f",
                 order.getClientId(), order.getTimeToReady());
     }
 
@@ -43,6 +43,7 @@ public class KitchenFederate extends Federate {
         if (order.getTimeToReady() >= 0) {
             return false;
         }
+        Logger.log("Meal for client with id %d is ready", order.getClientId());
         sendInteraction(COMPLETE_ORDER, Collections.singletonList(order.getClientId()));
         return true;
     }

@@ -15,7 +15,7 @@ public class Client {
 
     public static float ARRIVAL_PROBABILITY = 0.5f;
     private static float EAT_AGAIN_PROBABILITY = 0.25f;
-    private static float IMPATIENT_PROBABILITY = 0.10f;
+    private static float IMPATIENT_PROBABILITY = 0.05f;
 
     private int id;
     private ClientState state;
@@ -44,6 +44,7 @@ public class Client {
                     Logger.log("Client with id %d finished eating, paid and left restaurant", id);
                     state = ClientState.LEFT;
                     federate.getRestaurant().freePlace();
+                    federate.getClientsToRemove().add(this);
                     return Optional.of(InteractionType.PAY_AND_LEAVE);
                 }
             }
@@ -57,6 +58,8 @@ public class Client {
             } else {
                 if (isImpatient()) {
                     Logger.log("Client with id %d is impatient and left queue", id);
+                    federate.getQueue().remove(this);
+                    federate.getClientsToRemove().add(this);
                     return Optional.of(InteractionType.LEAVE_QUEUE);
                 }
             }

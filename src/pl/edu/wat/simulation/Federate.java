@@ -26,7 +26,7 @@ public abstract class Federate {
         publishAndSubscribe();
         while (ambassador.isRunning()) {
             Federation.advanceTime(TIME_STEP, ambassador);
-            Logger.log("%s: %f", NAME, ambassador.getFederateTime());
+            Logger.log("-------------------- %s: %f --------------------", NAME, ambassador.getFederateTime());
             run();
             Federation.tick();
         }
@@ -75,11 +75,6 @@ public abstract class Federate {
         }
         Federation.sendInteraction(interactionHandle, suppliedParameters, ambassador);
     }
-
-    protected void registerHLAObject(String name) {
-
-    }
-
 
     public Map<InteractionType, Integer> getInteractionHandles() {
         return interactionHandles;

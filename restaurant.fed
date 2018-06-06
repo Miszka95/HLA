@@ -31,7 +31,8 @@
         (parameter id))
       (class ServeOrder reliable timestamp
         (parameter id))
-      (class PayAndLeave reliable timestamp)
+      (class PayAndLeave reliable timestamp
+        (parameter id))
     )
   )
 )

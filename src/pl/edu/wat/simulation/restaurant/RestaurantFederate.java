@@ -25,7 +25,7 @@ public class RestaurantFederate extends Federate {
         ambassador = new RestaurantAmbassador();
         ambassador.setFederate(this);
         NAME = "RestaurantFederate";
-        TIME_STEP = 15.0;
+        TIME_STEP = 10.0;
         PUBLISHED_INTERACTIONS = Arrays.asList(JOIN_QUEUE, ALLOW_TO_ENTER);
         SUBSCRIBED_INTERACTIONS = Arrays.asList(ARRIVE, ENTER, PAY_AND_LEAVE);
         restaurant = Restaurant.getInstance();
@@ -44,9 +44,11 @@ public class RestaurantFederate extends Federate {
 
     @Override
     protected void run() {
+        Logger.log("Free places in restaurant: %d", restaurant.getFreePlaces());
         List<Interaction> interactions = ambassador.getReceivedInteractions();
         Interaction.filter(interactions, PAY_AND_LEAVE).forEach(this::handleInteraction);
         Interaction.filter(interactions, ENTER).forEach(this::handleInteraction);
+        restaurant.setTempPlaces(restaurant.getFreePlaces());
         Interaction.filter(interactions, ARRIVE).forEach(this::handleInteraction);
         interactions.clear();
         updateRestaurantObject(restaurant);
@@ -56,8 +58,10 @@ public class RestaurantFederate extends Federate {
     private void handleInteraction(Interaction interaction) {
         if (PAY_AND_LEAVE.equals(interaction.getInteractionType())) {
             restaurant.freePlace();
+            Logger.log("Client with id %d left restaurant", interaction.getParameter("id"));
         } else if (ENTER.equals(interaction.getInteractionType())) {
             restaurant.takePlace();
+            Logger.log("Client with id %d entered restaurant", interaction.getParameter("id"));
         } else if (ARRIVE.equals(interaction.getInteractionType())) {
             handleClientArrival(interaction);
         }
@@ -66,8 +70,9 @@ public class RestaurantFederate extends Federate {
     private void handleClientArrival(Interaction interaction) {
         Integer clientId = interaction.getParameter("id");
         if (restaurant.canEnter()) {
+            restaurant.takeTempPlace();
             sendInteraction(ALLOW_TO_ENTER, Collections.singletonList(clientId));
-            Logger.log("Allowing client with id %d to enter", clientId);
+            Logger.log("Client with id %d allowed to enter without queue", clientId);
         } else {
             int place = ++POSITION_IN_QUEUE;
             sendInteraction(JOIN_QUEUE, Arrays.asList(clientId, place));

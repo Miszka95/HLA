@@ -17,7 +17,7 @@ public class WaiterFederate extends Federate {
         ambassador = new WaiterAmbassador();
         ambassador.setFederate(this);
         NAME = "WaiterFederate";
-        TIME_STEP = 1.0;
+        TIME_STEP = 2.0;
         PUBLISHED_INTERACTIONS = Collections.singletonList(SERVE_ORDER);
         SUBSCRIBED_INTERACTIONS = Collections.singletonList(COMPLETE_ORDER);
     }

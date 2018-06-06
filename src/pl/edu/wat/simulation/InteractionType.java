@@ -13,7 +13,7 @@ public enum InteractionType {
     ORDER_FOOD("InteractionRoot.OrderFood", Collections.singletonList("id")),
     COMPLETE_ORDER("InteractionRoot.CompleteOrder", Collections.singletonList("id")),
     SERVE_ORDER("InteractionRoot.ServeOrder", Collections.singletonList("id")),
-    PAY_AND_LEAVE("InteractionRoot.PayAndLeave", Collections.emptyList());
+    PAY_AND_LEAVE("InteractionRoot.PayAndLeave", Collections.singletonList("id"));
 
     private String label;
     private List<String> parameters;
